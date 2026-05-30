@@ -1,0 +1,40 @@
+role,skill
+Data Analyst,python
+Data Analyst,sql
+Data Analyst,excel
+Data Analyst,power bi
+Data Analyst,tableau
+
+Data Scientist,python
+Data Scientist,machine learning
+Data Scientist,deep learning
+Data Scientist,statistics
+
+Business Analyst,excel
+Business Analyst,sql
+Business Analyst,power bi
+Business Analyst,reporting
+
+Frontend Developer,html
+Frontend Developer,css
+Frontend Developer,javascript
+Frontend Developer,react
+
+Mechanical Engineer,autocad
+Mechanical Engineer,solidworks
+Mechanical Engineer,catia
+Mechanical Engineer,ansys
+
+Civil Engineer,autocad
+Civil Engineer,staad pro
+Civil Engineer,etabs
+Civil Engineer,quantity surveying
+
+Electrical Engineer,matlab
+Electrical Engineer,plc
+Electrical Engineer,power systems
+
+Cyber Security Analyst,linux
+Cyber Security Analyst,networking
+Cyber Security Analyst,wireshark
+Cyber Security Analyst,penetration testing
