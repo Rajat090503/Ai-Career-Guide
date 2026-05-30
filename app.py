@@ -1,10 +1,7 @@
 from flask import Flask, render_template, request
 import os
 import pickle
-import numpy as np
 import pandas as pd
-
-from tensorflow.keras.models import load_model
 
 from utils.resume_parser import extract_text_from_pdf
 from utils.skill_extractor import extract_skills
@@ -18,9 +15,12 @@ app = Flask(__name__)
 UPLOAD_FOLDER = "uploads"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
+# ==========================
+# Load ML Model
+# ==========================
 
-
-model = load_model("deep_role_model.h5")
+with open("model.pkl", "rb") as f:
+    model = pickle.load(f)
 
 with open("vectorizer.pkl", "rb") as f:
     vectorizer = pickle.load(f)
@@ -29,7 +29,7 @@ with open("label_encoder.pkl", "rb") as f:
     encoder = pickle.load(f)
 
 # ==========================
-# Load Role Skills Dataset
+# Load Skills Dataset
 # ==========================
 
 skills_df = pd.read_csv("roles_skills.csv")
@@ -64,17 +64,15 @@ def analyze():
     # Extract Skills
     skills = extract_skills(text)
 
-    # Deep Learning Prediction
-    X = vectorizer.transform([text]).toarray()
+    # ==========================
+    # Predict Role
+    # ==========================
 
-    prediction = model.predict(
-        X,
-        verbose=0
-    )
+    X = vectorizer.transform([text])
 
-    role = encoder.inverse_transform(
-        [np.argmax(prediction)]
-    )[0]
+    prediction = model.predict(X)
+
+    role = encoder.inverse_transform(prediction)[0]
 
     print("Predicted Role:", role)
 
@@ -93,58 +91,42 @@ def analyze():
     missing_skills = []
 
     for skill in required_skills:
-
-        if skill.lower() not in [
-            s.lower() for s in skills
-        ]:
+        if skill.lower() not in [s.lower() for s in skills]:
             missing_skills.append(skill)
 
     # ==========================
     # ATS Score
     # ==========================
 
-    ats_score = calculate_ats_score(
-        skills
-    )
+    ats_score = calculate_ats_score(skills)
 
     # ==========================
     # Suggestions
     # ==========================
 
-    suggestions = get_suggestions(
-        skills
-    )
+    suggestions = get_suggestions(skills)
 
     # ==========================
-    # Recommended Courses
+    # Courses
     # ==========================
 
-    courses = recommend_courses(
-        missing_skills
-    )
+    courses = recommend_courses(missing_skills)
 
     # ==========================
-    # Learning Roadmap
+    # Roadmap
     # ==========================
 
-    roadmap = generate_roadmap(
-        role
-    )
+    roadmap = generate_roadmap(role)
 
     # ==========================
-    # Resume Match Percentage
+    # Match Percentage
     # ==========================
 
     if len(required_skills) > 0:
-
         match_percentage = int(
-            (
-                (len(required_skills) -
-                 len(missing_skills))
-                / len(required_skills)
-            ) * 100
+            ((len(required_skills) - len(missing_skills))
+             / len(required_skills)) * 100
         )
-
     else:
         match_percentage = 0
 
@@ -161,7 +143,7 @@ def analyze():
     )
 
 # ==========================
-# Run Application
+# Run App
 # ==========================
 
 if __name__ == "__main__":
