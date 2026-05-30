@@ -17,7 +17,7 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 # ==========================
 
-# Load ML Model
+# Load Model
 
 # ==========================
 
@@ -56,7 +56,6 @@ def analyze():
 
 ```
 try:
-
     file = request.files["resume"]
 
     filepath = os.path.join(
@@ -72,66 +71,36 @@ try:
     # Extract Skills
     skills = extract_skills(text)
 
-    # ==========================
     # Predict Role
-    # ==========================
-
     X = vectorizer.transform([text])
 
     prediction = model.predict(X)
 
     print("Prediction:", prediction)
-    print("Prediction Type:", type(prediction))
 
     role = str(prediction[0])
 
     print("Predicted Role:", role)
 
-    # ==========================
     # Required Skills
-    # ==========================
-
     required_skills = skills_df[
         skills_df["role"] == role
     ]["skill"].tolist()
 
-    # ==========================
     # Missing Skills
-    # ==========================
-
     missing_skills = []
 
     for skill in required_skills:
         if skill.lower() not in [s.lower() for s in skills]:
             missing_skills.append(skill)
 
-    # ==========================
-    # ATS Score
-    # ==========================
-
     ats_score = calculate_ats_score(skills)
-
-    # ==========================
-    # Suggestions
-    # ==========================
 
     suggestions = get_suggestions(skills)
 
-    # ==========================
-    # Courses
-    # ==========================
-
     courses = recommend_courses(missing_skills)
 
-    # ==========================
-    # Roadmap
-    # ==========================
-
     roadmap = generate_roadmap(role)
-
-    # ==========================
-    # Match Percentage
-    # ==========================
 
     if len(required_skills) > 0:
         match_percentage = int(
